@@ -172,6 +172,12 @@ return
         document.querySelector("id-error").value = ""
         document.querySelector(".name-error").value=""
 
+
+    nameInput=""
+    idInput="CSC-24F-6"
+    sectionInput="CS-IIB"
+
+
 })
 
 

@@ -6,8 +6,18 @@ const gpaRes = document.querySelector(".gpa-res")
 const gradeRes = document.querySelector(".grade-res")
 const percRes = document.querySelector(".perc-res")
 
+const pdfForm=document.querySelector(".pdf-form");
+const nameInput = document.querySelector(".name-input").value;
+const idInput = document.querySelector(".id-input").value;
+const sectionInput = document.querySelector(".section-input").value;
+
+const pfCH = parseInt(document.querySelector(".pf-ch").value); 
+
+const genPdfBtn = document.querySelector("pdf-g")
+
 let ds,fe,pf,pfLab,ict,ictLab,calc;
 let totalGpa=0,totalPercentage=0,Grade="";
+const marks = []
 console.log(marksInput)
 
 
@@ -41,13 +51,13 @@ form.addEventListener('submit',(e)=>{
     errorP.textContent = "";
 
     // Validate inputs
-    if(!ds || !fe || !pf || !pfLab || !ict || !ictLab || !calc) {
+    if(!ds || !fe || !pf || !pfLab || !ict || !ictLab || !calc || !pfCH) {
         errorP.textContent = "One or more inputs are empty";
         return;
     }
 
     if(isNaN(ds) || isNaN(fe) || isNaN(pf) || isNaN(pfLab) || 
-       isNaN(ict) || isNaN(ictLab) || isNaN(calc)) {
+       isNaN(ict) || isNaN(ictLab) || isNaN(calc) || isNaN(pfCH) ) {
         errorP.textContent = "Invalid input detected";
         return;
     }
@@ -58,7 +68,7 @@ form.addEventListener('submit',(e)=>{
                   (calcGrade(ict,100).point * 2.00) +
                   (calcGrade(ictLab,50).point * 1.00) +
                   (calcGrade(pf,100).point * 3.00) +
-                  (calcGrade(pfLab,50).point * 2.00) +
+                  (calcGrade(pfLab,50).point * pfCH) +
                   (calcGrade(calc,100).point * 3.0);
 
     totalGpa = totalGp / 17.00;
@@ -71,9 +81,18 @@ form.addEventListener('submit',(e)=>{
     gradeRes.textContent= "Grade : "+Grade
     // Clear inputs
     marksInput.forEach((o) => o.value = "");
+    marks[0] = ds
+    marks[1]= fe
+    marks[2]= ict
+    marks[3]=ictLab
+    marks[4]= pf
+    marks[5]= pfLab
+    marks[6]= calc
     // Reset variables
     ds = fe = pf = pfLab = ict = ictLab = calc = undefined;
 });
+
+
 
 
 
@@ -121,3 +140,160 @@ const calcGrade = (marks, total) => {
 
     return result;
 };
+
+
+
+
+
+
+pdfForm.addEventListener('submit',(e)=>{
+    e.preventDefault()
+if(  nameInput.trim() =="" || !nameInput  ){
+        document.querySelector(".name-error").textContent="Invalid Name"
+return
+    }
+
+if(  !idInput.includes("CSC-24F-6") || !idInput ){
+        document.querySelector("id-error").textContent = "Invalid ID"
+return
+}
+
+if( sectionInput !="CS-IIB"   ){
+        document.querySelector("section-error").textContent = "Invalid Section"
+return
+    }
+
+
+    generatePDF();
+
+
+
+        document.querySelector("section-error").value = ""
+        document.querySelector("id-error").value = ""
+        document.querySelector(".name-error").value=""
+
+})
+
+
+
+function generatePDF() 
+{
+
+       const { jsPDF } = window.jspdf;
+       const doc = new jsPDF();
+
+       // Add logo
+       const img = new Image();
+       img.src = "./logo.png";
+       img.onload = function () {
+         doc.addImage(img, "PNG", 10, 10, 30, 30);
+
+         // Add university title
+         doc.setFontSize(18);
+         doc.text("Sindh Madressatul Islam University (SMIU)", 50, 25);
+
+         // Add student details
+         doc.setFontSize(12);
+         doc.text(`Name: ${nameInput}`, 10, 50);
+         doc.text(`ID: ${idInput}`, 10, 60);
+         doc.text(`Section: ${sectionInput}`, 10, 70);
+
+         // Add table of marks
+         const headers = [
+           [
+             "Subjects",
+             "Obtained Marks",
+             "Total Marks",
+             "Percentage",
+             "Credit Hour",
+             "Grade",
+             "GP"
+           ],
+         ];
+         const data = [
+           [
+             "Discrete Mathematics",
+             marks[0],
+             100,
+             `${((marks[0]/100)*100).toFixed(2)}%`,
+             3.00,
+             calcGrade(marks[0],100).grade,
+             ((calcGrade(marks[0],100).point)*3.00).toFixed(2),
+           ],
+           [
+             "English-I",
+             marks[1],
+             100,
+             `${((marks[1]/100)*100).toFixed(2)}%`,
+             3.00,
+             calcGrade(marks[1],100).grade,
+            (( calcGrade(marks[1],100).point)*3.00).toFixed(2),
+           ],
+           [
+             "ICT",
+             marks[2],
+             100,
+             `${((marks[2]/100)*100).toFixed(2)}%`,
+             3.00,
+             calcGrade(marks[2],100).grade,
+             ((calcGrade(marks[2],100).point)*3.00).toFixed(2),
+           ],
+           [
+             "ICT LAB",
+             marks[3],
+             50,
+             `${((marks[3]/50)*100).toFixed(2)}%`,
+             1.00,
+             calcGrade(marks[3],50).grade,
+             ((calcGrade(marks[3],50).point)*1.00).toFixed(2),
+           ],
+           [
+             "Programming Fundamentals",
+             marks[4],
+             100,
+             `${((marks[4]/100)*100).toFixed(2)}%`,
+             3.00,
+             calcGrade(marks[4],100).grade,
+             ((calcGrade(marks[4],100).point)*3.00).toFixed(2),
+           ],
+           [
+             "PF Lab",
+             marks[5],
+             50,
+             `${((marks[5]/50)*100).toFixed(2)}%`,
+             1.00,
+             calcGrade(marks[5],50).grade,
+             ((calcGrade(marks[5],50).point)*1.00).toFixed(2),
+           ],
+           [
+             "Calculus",
+             marks[6],
+             100,
+             `${((marks[6]/100)*100).toFixed(2)}%`,
+             3.00,
+             calcGrade(marks[6],100).grade,
+             ((calcGrade(marks[6],100).point)*3.00).toFixed(2),
+           ],
+           // Add other subjects similarly
+           [
+             "Total",
+             marks.reduce((a,b)=>a+b),
+             600,
+             `${totalPercentage.toFixed(2)}`,
+                16.00,
+             Grade,
+             totalGpa.toFixed(2),
+           ],
+         ];
+
+         doc.autoTable({
+           startY: 80,
+           head: headers,
+           body: data,
+           theme: "grid",
+         });
+
+         // Save the PDF
+         doc.save(`${nameInput}_Report.pdf`);
+       };
+}

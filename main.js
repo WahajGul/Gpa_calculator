@@ -148,10 +148,10 @@ const calcGrade = (marks, total) => {
 
 pdfForm.addEventListener('submit',(e)=>{
     e.preventDefault()
-if(  nameInput.trim() =="" || !nameInput  ){
-        document.querySelector(".name-error").textContent="Invalid Name"
-return
-    }
+//if(  nameInput.trim() =="" || !nameInput  ){
+       // document.querySelector(".name-error").textContent="Invalid Name"
+ // return
+   // }
 
 if(  !idInput.includes("CSC-24F-6") || !idInput ){
         document.querySelector("id-error").textContent = "Invalid ID"
